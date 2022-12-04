@@ -1,0 +1,2 @@
+[workspace]
+members = ["vrs-script", "vrs-project", "vrs"]
