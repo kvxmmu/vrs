@@ -1,2 +1,3 @@
 [workspace]
-members = ["vrs-script", "vrs-project", "vrs"]
+members = ["vrs", "vrs-novel"]
+resolver = "2"

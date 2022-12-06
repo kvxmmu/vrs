@@ -1,28 +1,19 @@
 use {
-    clap::Parser,
-    macroquad::prelude::*,
-    std::path::PathBuf,
+    iced::{
+        window,
+        Sandbox,
+        Settings,
+    },
+    vrs::ui::*,
 };
 
-#[derive(Debug, Parser)]
-struct CliArgs {
-    novel: PathBuf,
-}
-
-fn window_conf() -> Conf {
-    Conf {
-        window_title: "VRS Interpreter".to_owned(),
-        sample_count: 4,
+fn main() {
+    InterpreterUi::run(Settings {
+        window: window::Settings {
+            size: (480, 640),
+            ..Default::default()
+        },
         ..Default::default()
-    }
-}
-
-#[macroquad::main(window_conf)]
-async fn main() {
-    let args = CliArgs::parse();
-    loop {
-        clear_background(WHITE);
-
-        next_frame().await;
-    }
+    })
+    .expect("Failed")
 }
