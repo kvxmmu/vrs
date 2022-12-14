@@ -56,13 +56,17 @@ impl ParseScript for &str {
 fn parse_command(line: &str) -> Result<Command, ParseError> {
     if line == "fi" {
         return Ok(Command::EndIf);
+    } else if line == "cleartext" {
+        return Ok(Command::ClearText(ClearTextType::FillBottomScreen));
     }
 
     let (command, args) = split_once_required(line)?;
 
     Ok(match command {
+        "label" => Command::Label(args.to_owned()),
+        "goto" => Command::Goto(args.to_owned()),
+
         "cleartext" => Command::ClearText(match args {
-            "" => ClearTextType::FillBottomScreen,
             "!" => ClearTextType::TextBufferInclHistory,
 
             t => {
@@ -146,15 +150,19 @@ fn parse_command(line: &str) -> Result<Command, ParseError> {
         }
 
         "sound" => {
-            let (file, looping) = match split_once_required(args)? {
-                (f, "~") => (f, SoundLooping::StopCurrentlyPlaying),
-                (f, "-1") => (f, SoundLooping::Infinite),
-                (f, n) => (f, SoundLooping::Count(try_parse_u16(n)?)),
-            };
+            if args == "~" {
+                Command::Sound(SoundLooping::StopCurrentlyPlaying)
+            } else {
+                let (file, looping) = split_once_required(args)?;
+                let file = file.into();
 
-            Command::Sound {
-                file: file.into(),
-                looping,
+                Command::Sound(match looping {
+                    "-1" => SoundLooping::Infinite { file },
+                    n => SoundLooping::Count {
+                        file,
+                        count: try_parse_u16(n)?,
+                    },
+                })
             }
         }
 

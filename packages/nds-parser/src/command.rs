@@ -49,11 +49,11 @@ pub enum ChoiceOption {
     Option(String),
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum SoundLooping {
-    Infinite,
+    Infinite { file: PathBuf },
     StopCurrentlyPlaying,
-    Count(u16),
+    Count { file: PathBuf, count: u16 },
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -73,10 +73,7 @@ pub enum Command {
         coordinates: (u16, u16),
     },
 
-    Sound {
-        file: PathBuf,
-        looping: SoundLooping,
-    },
+    Sound(SoundLooping),
     Music {
         file: MusicFile,
     },

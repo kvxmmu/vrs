@@ -1,7 +1,13 @@
 use crate::{
     command::{
+        ChoiceOption,
+        ClearTextType,
         Command,
         IfRhs,
+        MusicFile,
+        SoundLooping,
+        VariableModifier,
+        VariableStorageType,
     },
     prelude::ParseScript,
     text::{
@@ -11,6 +17,149 @@ use crate::{
         TextType,
     },
 };
+
+#[test]
+fn test_cleartext() {
+    let commands = "cleartext\ncleartext !".parse_script().unwrap();
+
+    assert_eq!(
+        commands,
+        [
+            Command::ClearText(ClearTextType::FillBottomScreen),
+            Command::ClearText(ClearTextType::TextBufferInclHistory)
+        ]
+    );
+}
+
+#[test]
+fn test_random() {
+    let commands = "random var 0 10".parse_script().unwrap();
+
+    assert_eq!(
+        commands,
+        [Command::Random {
+            variable: "var".into(),
+            range: 0..=10
+        }]
+    );
+}
+
+#[test]
+fn test_delay() {
+    let commands = "delay 100".parse_script().unwrap();
+
+    assert_eq!(commands, [Command::Delay { frames: 100 }]);
+}
+
+#[test]
+fn test_jump() {
+    let commands = "jump file.scr\njump fuck.scr label"
+        .parse_script()
+        .unwrap();
+
+    assert_eq!(
+        commands,
+        [
+            Command::Jump {
+                file: "file.scr".into(),
+                label: None
+            },
+            Command::Jump {
+                file: "fuck.scr".into(),
+                label: Some("label".into())
+            }
+        ]
+    );
+}
+
+#[test]
+fn test_label_and_goto() {
+    let commands = "label test\ngoto test".parse_script().unwrap();
+    assert_eq!(
+        commands,
+        [
+            Command::Label("test".to_owned()),
+            Command::Goto("test".to_owned())
+        ]
+    );
+}
+
+#[test]
+fn test_choice() {
+    let commands = "choice hello|world|$name".parse_script().unwrap();
+
+    assert_eq!(
+        commands,
+        [Command::Choice {
+            options: vec![
+                ChoiceOption::Option("hello".to_owned()),
+                ChoiceOption::Option("world".to_owned()),
+                ChoiceOption::Variable("name".to_owned()),
+            ]
+        }]
+    );
+}
+
+#[test]
+fn test_music() {
+    let commands = "music bgm.mp3\nmusic ~".parse_script().unwrap();
+
+    assert_eq!(
+        commands,
+        [
+            Command::Music {
+                file: MusicFile::Path("bgm.mp3".into())
+            },
+            Command::Music {
+                file: MusicFile::StopPlaying
+            }
+        ]
+    );
+}
+
+#[test]
+fn test_sound() {
+    let commands = "sound bg0.aac -1\nsound ~\nsound waves.aac -1"
+        .parse_script()
+        .unwrap();
+    assert_eq!(
+        commands,
+        [
+            Command::Sound(SoundLooping::Infinite {
+                file: "bg0.aac".into()
+            }),
+            Command::Sound(SoundLooping::StopCurrentlyPlaying),
+            Command::Sound(SoundLooping::Infinite {
+                file: "waves.aac".into()
+            })
+        ]
+    );
+}
+
+#[test]
+fn test_setvar() {
+    let commands = "setvar affection = 10\ngsetvar progress = 0"
+        .parse_script()
+        .unwrap();
+
+    assert_eq!(
+        commands,
+        [
+            Command::SetVar {
+                name: "affection".to_owned(),
+                accumulator: 10,
+                modifier: VariableModifier::Assign,
+                storage: VariableStorageType::Local
+            },
+            Command::SetVar {
+                name: "progress".to_owned(),
+                accumulator: 0,
+                modifier: VariableModifier::Assign,
+                storage: VariableStorageType::Global
+            },
+        ]
+    );
+}
 
 #[test]
 fn test_setimg() {
