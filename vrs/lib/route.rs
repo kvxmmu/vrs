@@ -1,3 +1,0 @@
-pub enum UiRoute {
-    Index,
-}

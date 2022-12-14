@@ -1,3 +1,20 @@
+[package]
+name = "Vrs"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[[bin]]
+name = "vrs"
+path = "src/main.rs"
+
+[lib]
+name = "vrs"
+path = "lib/lib.rs"
+
+[dependencies]
+
+
 [workspace]
-members = ["vrs", "vrs-novel"]
-resolver = "2"
+members = ["packages/*"]
