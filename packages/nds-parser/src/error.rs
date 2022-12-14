@@ -35,5 +35,5 @@ pub enum ParseError {
     UnknownClearTextType(String),
 
     #[error("Failed to parse text: {0}")]
-    Text(TextParseError),
+    Text(#[from] TextParseError),
 }

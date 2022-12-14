@@ -1,6 +1,10 @@
-use crate::{
-    command::*,
-    error::ParseError,
+use {
+    crate::{
+        command::*,
+        error::ParseError,
+        text::Text,
+    },
+    std::str::FromStr,
 };
 
 enum OptionalResult<T, E> {
@@ -128,7 +132,8 @@ fn parse_command(line: &str) -> Result<Command, ParseError> {
         },
 
         "text" => {
-            todo!();
+            let text = Text::from_str(args)?;
+            Command::Text(text)
         }
 
         "music" => {
@@ -197,7 +202,7 @@ fn split_once_optional(s: &str) -> (&str, Option<&str>) {
         } + 1,
     );
 
-    (left, Some(right))
+    (&left[..left.len() - 1], Some(right))
 }
 
 fn try_collect_vec(

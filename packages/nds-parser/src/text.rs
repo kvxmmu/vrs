@@ -155,10 +155,29 @@ impl FromStr for Text {
                     &mut current_color,
                 )?,
                 '\\' => {
-                    parse_color(&mut chars, &mut last, &mut current_color)?
+                    let prev = current_color;
+                    let color = parse_color(
+                        &mut chars,
+                        &mut last,
+                        &mut current_color,
+                    );
+                    if color.is_ok() && !last.is_empty() {
+                        spans.push(TextSpan {
+                            text: TextType::Plain(last.clone()),
+                            color: prev,
+                        });
+                        last.clear();
+
+                        None
+                    } else {
+                        color?
+                    }
                 }
 
-                _ => todo!(),
+                _ => {
+                    last.push(chr);
+                    continue;
+                }
             };
 
             if let Some(span) = span_opt {

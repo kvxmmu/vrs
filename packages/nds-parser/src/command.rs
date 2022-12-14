@@ -62,7 +62,7 @@ pub enum MusicFile {
     Path(PathBuf),
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Command {
     BgLoad {
         file: PathBuf,
