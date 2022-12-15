@@ -48,7 +48,26 @@ impl<T: AsRef<str>> ParseScript for T {
     where
         Self: Sized,
     {
-        let lines = self.as_ref().lines().map(|v| v.trim());
+        fn trim_start_non_ascii(line: &str) -> &str {
+            if let Some(c) = line.chars().next() {
+                if c.is_ascii() {
+                    line
+                } else {
+                    trim_start_non_ascii(&line[c.len_utf8()..])
+                }
+            } else {
+                line
+            }
+        }
+
+        let lines = self.as_ref().lines().filter_map(|v| {
+            let line = trim_start_non_ascii(v.trim());
+            if line.is_empty() {
+                None
+            } else {
+                Some(line)
+            }
+        });
         try_collect_vec(lines.map(parse_command))
     }
 }

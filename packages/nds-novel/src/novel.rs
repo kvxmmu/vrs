@@ -200,7 +200,7 @@ impl Novel {
         &self,
         path: impl AsRef<Path>,
     ) -> Result<Script, LoadScriptError> {
-        fs::read_to_string(path)?
+        fs::read_to_string(self.resources.script.join(path))?
             .parse_script()
             .map(Script::new)
             .map_err(|e| e.into())

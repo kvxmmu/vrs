@@ -33,8 +33,14 @@ pub struct TextSpan {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct Text {
-    pub spans: Vec<TextSpan>,
+pub enum Text {
+    Spans {
+        spans: Vec<TextSpan>,
+        click_to_advance: bool,
+    },
+    BlankLine {
+        click_to_advance: bool,
+    },
 }
 
 // Start: \x1b[<N>;1m
@@ -136,7 +142,28 @@ define_parsers! {
 impl FromStr for Text {
     type Err = TextParseError;
 
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
+    fn from_str(mut s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "~" => {
+                return Ok(Text::BlankLine {
+                    click_to_advance: false,
+                })
+            }
+            "!" => {
+                return Ok(Text::BlankLine {
+                    click_to_advance: true,
+                })
+            }
+
+            _ => {}
+        };
+        let click_to_advance = if s.starts_with('@') {
+            s = &s[1..];
+            false
+        } else {
+            true
+        };
+
         let mut spans = Vec::new();
         let mut last = String::new();
         let mut chars = s.chars();
@@ -200,7 +227,10 @@ impl FromStr for Text {
             });
         }
 
-        Ok(Self { spans })
+        Ok(Self::Spans {
+            spans,
+            click_to_advance,
+        })
     }
 }
 
