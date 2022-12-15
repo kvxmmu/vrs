@@ -16,6 +16,8 @@ path = "lib/lib.rs"
 [dependencies]
 nds-novel = { path = "packages/nds-novel" }
 
-
 [workspace]
 members = ["packages/*"]
+
+[workspace.dependencies]
+thiserror = "1.0.37"

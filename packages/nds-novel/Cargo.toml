@@ -7,4 +7,11 @@ edition = "2021"
 
 [dependencies]
 nds-parser = { path = "../nds-parser" }
-zip = { version = "0.6.3", default-features = false, features = ["bzip2", "deflate", "sha1", "zstd"] }
+zip = { version = "0.6.3", default-features = false, features = [
+    "bzip2",
+    "deflate",
+    "sha1",
+    "zstd",
+] }
+
+thiserror = { workspace = true }
