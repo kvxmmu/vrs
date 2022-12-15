@@ -40,7 +40,7 @@ impl<T, E> From<Option<Result<T, E>>> for OptionalResult<T, E> {
     }
 }
 
-impl ParseScript for &str {
+impl<T: AsRef<str>> ParseScript for T {
     type Error = ParseError;
     type Output = Vec<Command>;
 
@@ -48,7 +48,7 @@ impl ParseScript for &str {
     where
         Self: Sized,
     {
-        let lines = self.lines().map(|v| v.trim());
+        let lines = self.as_ref().lines().map(|v| v.trim());
         try_collect_vec(lines.map(parse_command))
     }
 }
